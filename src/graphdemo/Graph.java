@@ -415,19 +415,64 @@ public class Graph<E extends Comparable<E>> implements GraphAPI<E>
    @Override
    public boolean isEdge(E fromKey, E toKey)
    {
-      //implement this function
+      if(isEmpty()){
+         return false;
+      }
+      if(order == 1){
+         return false;
+      }
+      if(isVertex(fromKey)){
+         if(isVertex(toKey)){
+            Vertex tmpFrom = first;
+            Edge tmpEdge = tmpFrom.pEdge;
+            while (tmpEdge != null && tmpEdge.destination != fromKey)
+            {
+               tmpEdge = tmpEdge.pNextEdge;
+            }
+            return tmpEdge.destination.data.equals(toKey);
+         }
+         return false;
+      }
    }
 
    @Override
    public boolean isReachable(E fromKey, E toKey)
    {
-      //implement this method
+      if(isEmpty()){
+         return false;
+      }
+      if(order == 1){
+         return false;
+      }
+      if(isVertex(fromKey)){
+         if(isVertex(toKey)){
+            Vertex tmpFrom = first;
+            Edge tmpEdge = tmpFrom.pEdge;
+            while (tmpEdge != null && tmpEdge.destination != fromKey) {
+               tmpEdge = tmpEdge.pNextEdge;
+            }
+            while(!tmpEdge.destination.data.equals(toKey)){
+               tmpEdge = tmpEdge.pNextEdge;
+            }
+            return tmpEdge.destination.data.equals(toKey);
+         }
+         return false;
+      }
+
    }
 
    @Override
    public long countEdges()
    {
-      //implement this method
+      if(isEmpty()){
+         return 0;
+      }
+      if(order == 1){
+         return 0;
+      }
+
+
+
    }
    /*--------------------End Code Augmentation ---------------*/
 
