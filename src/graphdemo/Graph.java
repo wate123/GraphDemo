@@ -424,12 +424,26 @@ public class Graph<E extends Comparable<E>> implements GraphAPI<E>
       if(isVertex(fromKey)){
          if(isVertex(toKey)){
             Vertex tmpFrom = first;
+            while (tmpFrom != null && fromKey.compareTo(tmpFrom.data) > 0)
+            {
+               tmpFrom = tmpFrom.pNextVertex;
+            }
+            if (tmpFrom == null || fromKey.compareTo(tmpFrom.data) != 0)
+               return false;
+            Vertex tmpTo = first;
             Edge tmpEdge = tmpFrom.pEdge;
-            while (tmpEdge != null && tmpEdge.destination != fromKey)
+            while (tmpEdge != null && tmpEdge.destination != tmpTo)
             {
                tmpEdge = tmpEdge.pNextEdge;
             }
-            return tmpEdge.destination.data.equals(toKey);
+            if (tmpTo == null || toKey.compareTo(tmpTo.data) != 0)
+               return false;
+            if(tmpEdge == null)
+               return false;
+            if (!tmpEdge.destination.data.equals(toKey))
+               return false;
+            return true;
+
          }
          return false;
       }
@@ -447,15 +461,28 @@ public class Graph<E extends Comparable<E>> implements GraphAPI<E>
       }
       if(isVertex(fromKey)){
          if(isVertex(toKey)){
-            Vertex tmpFrom = first;
-            Edge tmpEdge = tmpFrom.pEdge;
-            while (tmpEdge != null && tmpEdge.destination != fromKey) {
+            Vertex tmpFrom;
+            Vertex tmpTo;
+            Edge tmpEdge;
+            Edge pred;
+            tmpFrom = first;
+            while(tmpFrom != null && fromKey.compareTo(tmpFrom.data) > 0)
+               tmpFrom = tmpFrom.pNextVertex;
+            if (tmpFrom == null || fromKey.compareTo(tmpFrom.data) != 0)
+               return false;
+            tmpTo = first;
+            while(tmpTo != null && toKey.compareTo(tmpTo.data) > 0)
+               tmpTo = tmpTo.pNextVertex;
+            if (tmpTo == null || toKey.compareTo(tmpTo.data) != 0)
+               return false;
+            tmpEdge = tmpFrom.pEdge;
+            while (tmpEdge != null && tmpEdge.destination != tmpTo)
+            {
                tmpEdge = tmpEdge.pNextEdge;
             }
-            while(!tmpEdge.destination.data.equals(toKey)){
-               tmpEdge = tmpEdge.pNextEdge;
-            }
-            return tmpEdge.destination.data.equals(toKey);
+            if(tmpEdge == null)
+               return false;
+            return true;
          }
          return false;
       }
@@ -471,14 +498,15 @@ public class Graph<E extends Comparable<E>> implements GraphAPI<E>
       if(order == 1){
          return 0;
       }
-      Vertex tmpVer = first;
-      Edge tmpEdge = tmpVer.pEdge;
-      int count = 0;
-      while (tmpEdge.pNextEdge != null){
-         tmpEdge = tmpEdge.pNextEdge;
-         count++;
+      Vertex tmp;
+      int noEdges;
+      tmp = first;
+      while (tmp != null){
+         noEdges = noEdges + tmp.inDeg;
+         tmp = tmp.pNextVertex;
       }
-      return count;
+
+      return noEdges;
    }
    /*--------------------End Code Augmentation ---------------*/
 

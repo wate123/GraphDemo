@@ -39,8 +39,16 @@ public class GraphDemo
                System.out.println();
                System.out.println("Adjacency Matrix For The Graph In "+args[0]);
                System.out.println("=========================================================================================");
-               
-			   //write code to generate the adjacency matrix      
+
+               for (i = 1; i < s; i++) {
+                  for (j = 1; j < s; j++) {
+                     boolean bool = g.isEdge(new City(i), new City(j));
+                     if(bool == true)
+                        System.out.print("1");
+                     else {
+                     System.out.println("0");}
+                  }
+               }
                
 			   System.out.println("=========================================================================================");
                System.out.println();
@@ -50,7 +58,7 @@ public class GraphDemo
                System.out.println("Transitive Closure Matrix For The Graph In "+args[0]);
                System.out.println("=========================================================================================");
 			   
-               //write code to generate the transitive closure matrix       
+
 			   
                System.out.println("=========================================================================================");
                System.out.println();
@@ -69,10 +77,21 @@ public class GraphDemo
                   double totalDistance = 0;
 				  
                   //Declare additional variables and arrays as necessary
-                  
+                  int n;
+                  int v;
+                  int numSeen = 0;
+                  int dist[];
+                  int pred[];
+                  boolean seen[];
 				  System.out.printf("Shortest route from %s to %s:%n",srcCity.getLabel(),destCity.getLabel());				   
                   System.out.println("=========================================================================================");
-                  //Write code to call either dijkstra or floyd method and then     
+                  for (i = 1; i < n; i++) {
+                     dist[v] = INFINITY;
+                     pred[v] = -1;
+                     seen[v] = false;
+                  }
+                  
+                  //Write code to call either dijkstra or floyd method and then
 				  //Give all intermediate connections beginning with the source city and ending
                   //with the destination city aligned in column format as indicated below:
                   //
@@ -91,7 +110,7 @@ public class GraphDemo
                System.out.println("PostOrder DFS Traversal For The Graph In "+args[0]);
                System.out.println("==========================================================================");
                
-			   //Call the dfsTraverse method
+			   g.dfsTraverse(f);
                
                System.out.println("==========================================================================");
                System.out.println();
@@ -101,9 +120,9 @@ public class GraphDemo
                System.out.println();
                System.out.println("BFS Traversal For The Graph In "+args[0]);
                System.out.println("==========================================================================");
-               
-			   //Call the bfsTraverse method
-               
+
+               g.bfsTraverse(f);
+
                System.out.println("==========================================================================");
                System.out.println();
                System.out.println();
