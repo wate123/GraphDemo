@@ -8,9 +8,12 @@ package graphdemo;
  * the weighted diagraph implementation.
  */
 
+import sun.security.provider.certpath.Vertex;
+
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
+import java.util.PriorityQueue;
 
 public class GraphDemo
 {
@@ -77,20 +80,11 @@ public class GraphDemo
                   double totalDistance = 0;
 				  
                   //Declare additional variables and arrays as necessary
-                  int n;
-                  int v;
-                  int numSeen = 0;
-                  int dist[];
-                  int pred[];
-                  boolean seen[];
+
+
 				  System.out.printf("Shortest route from %s to %s:%n",srcCity.getLabel(),destCity.getLabel());				   
                   System.out.println("=========================================================================================");
-                  for (i = 1; i < n; i++) {
-                     dist[v] = INFINITY;
-                     pred[v] = -1;
-                     seen[v] = false;
-                  }
-                  
+
                   //Write code to call either dijkstra or floyd method and then
 				  //Give all intermediate connections beginning with the source city and ending
                   //with the destination city aligned in column format as indicated below:
@@ -278,7 +272,16 @@ public class GraphDemo
     */
    private static void dijkstra(Graph<City> g, double[] dist, int[] pred, int source, int destination) throws GraphException
    {
-      //Implement this method or floyd method above (not both).   
+      boolean seen[] = new boolean[dist.length];
+      for (int i = 0; i < dist.length; i++) {
+         dist[i] = Integer.MAX_VALUE;
+         pred[i] = -1;
+         seen[i] = false;
+      }
+      dist[source] = 0;
+      for (int i = 0; i < dist.length; i++) {
+         seen[]
+      }
    }   
    
    /**
