@@ -33,6 +33,8 @@ public class GraphDemo
       Graph<City> g = readGraph(args[0]);
       long s = g.size();
       menuReturnValue = -1;
+      boolean value = false;
+      double weight;
       while (menuReturnValue != 0)
       {
          menuReturnValue = menu();
@@ -42,27 +44,55 @@ public class GraphDemo
                System.out.println();
                System.out.println("Adjacency Matrix For The Graph In "+args[0]);
                System.out.println("=========================================================================================");
+                for (int a = 1; a <= s; a++){
+                    System.out.println();
+                    for(int b = 1; b <= s; b++){
+                        c1 = g.retrieveVertex(new City (a));
+                        c2 = g.retrieveVertex(new City(b));
+                        if(c1 == c2){
+                            System.out.printf("%-6d",0);
 
-               for (i = 1; i < s; i++) {
-                  for (j = 1; j < s; j++) {
-                     boolean bool = g.isEdge(new City(i), new City(j));
-                     if(bool == true)
-                        System.out.print("1");
-                     else {
-                     System.out.println("0");}
-                  }
-               }
-               
-			   System.out.println("=========================================================================================");
+                        }
+                        else{
+                            boolean edge = g.isEdge(c1,c2);
+                            if(edge){
+                                weight = g.retrieveEdge(c1, c2);
+                                System.out.printf("%-6.1f",weight);
+                            }
+                            else{
+                                System.out.printf("%-6s","INF");
+                            }
+                        }
+                    }
+                    System.out.println();
+                }
+                System.out.println();
+                System.out.println("=========================================================================================");
                System.out.println();
                System.out.println();
                break;
             case 2: //Transitive Closure Matrix
                System.out.println("Transitive Closure Matrix For The Graph In "+args[0]);
                System.out.println("=========================================================================================");
-			   
-
-			   
+                System.out.println();
+               for(int y = 1; y <= s; y++)
+               {
+                  System.out.println();
+                   for(int z = 1; z <= s; z++)
+                   {
+                        c1 = g.retrieveVertex(new City(y));
+                        c2 = g.retrieveVertex(new City(z));
+                            value = g.isReachable(c1, c2);
+                            if(value)
+                                System.out.print("1   ");
+                            else
+                            {
+                                System.out.print("0   ");
+                            }    
+                    }
+               }
+                System.out.println();
+                System.out.println();
                System.out.println("=========================================================================================");
                System.out.println();
                System.out.println();
@@ -71,7 +101,7 @@ public class GraphDemo
                console = new Scanner(System.in);
                System.out.printf("Enter the source vertex: ");      
                int src = console.nextInt();
-			   City srcCity = g.retrieveVertex(new City(source));
+			   City srcCity = g.retrieveVertex(new City(src));
                System.out.printf("Enter the destination vertex: ");      
                int dest = console.nextInt();
 			   City destCity = g.retrieveVertex(new City(dest));			   
@@ -80,7 +110,8 @@ public class GraphDemo
                   double totalDistance = 0;
 				  
                   //Declare additional variables and arrays as necessary
-
+                   double dist[][] = new double[(int)s][(int)s];
+                   int path[][] = new int[(int)s][(int)s];
 
 				  System.out.printf("Shortest route from %s to %s:%n",srcCity.getLabel(),destCity.getLabel());				   
                   System.out.println("=========================================================================================");
@@ -92,6 +123,22 @@ public class GraphDemo
                   //        cityX            ->             cityY           distance
                   //
                   //Display the intermediate distances one per line
+
+                   floyd(g, dist, path);
+                   totalDistance = dist[src-1][dest-1];
+                   int original = src, temp = dest;
+                   Stack<String> stack = new Stack();
+                   do{
+                       src = path[src-1][dest-1];
+                       dest = temp;
+                       if(src!=0)
+                           stack.add(String.format("%15s -> %-15s %d", g.retrieveVertex(new City(src)).getLabel().trim(), g.retrieveVertex(new City(dest)).getLabel().trim(), g.retrieveEdge(new City(src), new City(dest)).intValue()));
+                       else
+                           stack.add(String.format("%15s -> %-15s %d", srcCity.getLabel().trim(), g.retrieveVertex(new City(dest)).getLabel().trim(), g.retrieveEdge(new City(original), new City(dest)).intValue()));
+                       temp = src;
+                   }while(src != 0);
+                   while(!stack.empty())
+                       System.out.println(stack.pop());
 
                   System.out.println("=========================================================================================");	
                   System.out.printf("Total distance: %f miles.%n%n",totalDistance);                  
@@ -259,10 +306,46 @@ public class GraphDemo
     */
    private static void floyd(Graph<City> g, double dist[][], int path[][]) throws GraphException
    {
-      //Implement this method or dijkstra method below (not both).
-   }               
-   
-   /**
+       int i;
+       int j;
+       int k;
+       City c1;
+       City c2;
+       for( i =0; i < g.size(); i++)
+       {
+           c1 = g.retrieveVertex(new City(i+1));
+           for(j = 0; j < g.size(); j++)
+           {
+               c2 = g.retrieveVertex(new City(j+1));
+               path[i][j] = 0;
+               if ( i == j)
+                   dist[i][j] = 0;
+               else if(g.isEdge(c2, c1))
+                   dist[i][j] = g.retrieveEdge(c1, c2);
+               else
+                   dist[i][j] = INFINITY;
+           }
+       }
+       for(k = 0; k < g.size(); k ++)
+       {
+           for( i = 0; i < g.size(); i++)
+           {
+               for(j = 0; j < g.size(); j++)
+               {
+                   if (dist[i][k] != INFINITY && dist[k][j] != INFINITY)
+                   {
+                       if (dist[i][j] >(dist[i][k] + dist[k][j]))
+                       {
+                           dist[i][j] = dist[i][k] + dist[k][j];
+                           path[i][j] = k;
+                       }
+                   }
+               }
+           }
+       }
+   }
+
+    /**
     * This method computes the cost and path arrays using the 
     * Dijkstra's single-source shortest path greedy algorithm.
     * @param g an instance of a weighted directed graph
@@ -272,16 +355,7 @@ public class GraphDemo
     */
    private static void dijkstra(Graph<City> g, double[] dist, int[] pred, int source, int destination) throws GraphException
    {
-      boolean seen[] = new boolean[dist.length];
-      for (int i = 0; i < dist.length; i++) {
-         dist[i] = Integer.MAX_VALUE;
-         pred[i] = -1;
-         seen[i] = false;
-      }
-      dist[source] = 0;
-      for (int i = 0; i < dist.length; i++) {
-         seen[]
-      }
+       
    }   
    
    /**

@@ -415,76 +415,45 @@ public class Graph<E extends Comparable<E>> implements GraphAPI<E>
    @Override
    public boolean isEdge(E fromKey, E toKey)
    {
-      if(isEmpty()){
+      try{
+         retrieveEdge(fromKey, toKey);
+         return true;
+      }catch(GraphException e){
          return false;
       }
-      if(order == 1){
-         return false;
-      }
-      if(isVertex(fromKey)){
-         if(isVertex(toKey)){
-            Vertex tmpFrom = first;
-            while (tmpFrom != null && fromKey.compareTo(tmpFrom.data) > 0)
-            {
-               tmpFrom = tmpFrom.pNextVertex;
-            }
-            if (tmpFrom == null || fromKey.compareTo(tmpFrom.data) != 0)
-               return false;
-            Vertex tmpTo = first;
-            Edge tmpEdge = tmpFrom.pEdge;
-            while (tmpEdge != null && tmpEdge.destination != tmpTo)
-            {
-               tmpEdge = tmpEdge.pNextEdge;
-            }
-            if (tmpTo == null || toKey.compareTo(tmpTo.data) != 0)
-               return false;
-            if(tmpEdge == null)
-               return false;
-            if (!tmpEdge.destination.data.equals(toKey))
-               return false;
-            return true;
-
-         }
-         return false;
-      }
-      return false;
    }
 
    @Override
    public boolean isReachable(E fromKey, E toKey)
    {
-      if(isEmpty()){
+      if(isEmpty())
          return false;
+      if(fromKey.compareTo(toKey)==0)
+         return true;
+      Vertex vtmp = first;
+      while(vtmp.data.compareTo(fromKey)!=0){
+         vtmp = vtmp.pNextVertex;
+         if(vtmp==null)
+            return false;
       }
-      if(order == 1){
-         return false;
-      }
-      if(isVertex(fromKey)){
-         if(isVertex(toKey)){
-            Vertex tmpFrom;
-            Vertex tmpTo;
-            Edge tmpEdge;
-            Edge pred;
-            tmpFrom = first;
-            while(tmpFrom != null && fromKey.compareTo(tmpFrom.data) > 0)
-               tmpFrom = tmpFrom.pNextVertex;
-            if (tmpFrom == null || fromKey.compareTo(tmpFrom.data) != 0)
-               return false;
-            tmpTo = first;
-            while(tmpTo != null && toKey.compareTo(tmpTo.data) > 0)
-               tmpTo = tmpTo.pNextVertex;
-            if (tmpTo == null || toKey.compareTo(tmpTo.data) != 0)
-               return false;
-            tmpEdge = tmpFrom.pEdge;
-            while (tmpEdge != null && tmpEdge.destination != tmpTo)
-            {
-               tmpEdge = tmpEdge.pNextEdge;
+      ArrayList<Vertex> queue = new ArrayList();
+      queue.add(vtmp);
+      Edge etmp;
+      int to = 1, toLater = 0;
+      for(int iteration = 0; iteration < order; iteration++){
+         while(to != 0){
+            etmp = queue.remove(0).pEdge;
+            to--;
+            while(etmp!=null){
+               if(etmp.destination.data.compareTo(toKey)==0)
+                  return true;
+               queue.add(etmp.destination);
+               toLater++;
+               etmp = etmp.pNextEdge;
             }
-            if(tmpEdge == null)
-               return false;
-            return true;
          }
-         return false;
+         to+=toLater;
+         toLater = 0;
       }
       return false;
    }
@@ -492,21 +461,13 @@ public class Graph<E extends Comparable<E>> implements GraphAPI<E>
    @Override
    public long countEdges()
    {
-      if(isEmpty()){
-         return 0;
-      }
-      if(order == 1){
-         return 0;
-      }
-      Vertex tmp;
-      int noEdges;
-      tmp = first;
-      while (tmp != null){
-         noEdges = noEdges + tmp.inDeg;
+      Vertex tmp = first;
+      int s = 0;
+      while(tmp!=null){
+         s+=tmp.outDeg;
          tmp = tmp.pNextVertex;
       }
-
-      return noEdges;
+      return s;
    }
    /*--------------------End Code Augmentation ---------------*/
 
